@@ -1,0 +1,17 @@
+{
+  "name": "CleanAIRDevice",
+  "version": "1.0.0",
+  "description": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut l",
+  "keywords": "CleanAIR device sensor actuator",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:GarondEisenfaust/CleanAIRDevice.git"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "knolleary/PubSubClient": "^2.8",
+    "bblanchon/ArduinoJson": "6.18.0"
+  },
+  "frameworks": "arduino",
+  "platforms": "espressif8266"
+}
