@@ -80,6 +80,7 @@ void Loop() {
     CleanAIR::ConnectToMQTT(CleanAIR::config, CleanAIR::pubSubClient, *CleanAIR::consumer, CleanAIR::wifiClient);
   }
   CleanAIR::pubSubClient.loop();
+  consumer->Loop();
 }
 
 void LoadConfiguration(const char* filename) { LoadConfiguration(config, filename); }

@@ -6,5 +6,6 @@ class MessageConsumer {
  public:
   virtual ~MessageConsumer() = default;
   virtual void Consume(const char* topic, const MessageJson& message) = 0;
+  virtual void Loop() = 0;
 };
 }  // namespace CleanAIR
