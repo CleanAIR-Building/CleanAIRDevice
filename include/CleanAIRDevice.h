@@ -1,12 +1,4 @@
-#include "Arduino.h"
-#include "ArduinoJson.h"
-#include "Config.h"
-#include "ESP8266WiFi.h"
-#include "JsonDocuments.h"
-#include "JsonUtil.h"
 #include "MessageConsumer.h"
-#include "PubSubClient.h"
-#include "Util.h"
 
 namespace CleanAIR {
 
