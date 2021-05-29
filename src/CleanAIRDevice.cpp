@@ -46,7 +46,7 @@ void ConnectToMQTT(const Config& config, PubSubClient& pubSubClient, MessageCons
   pubSubClient.setClient(wifiClient);
 
   WaitFor([&config, &pubSubClient]() {
-    return pubSubClient.connect("traffic-light", config.mqttUser.c_str(), config.mqttPassword.c_str());
+    return pubSubClient.connect(config.mqttClientName.c_str(), config.mqttUser.c_str(), config.mqttPassword.c_str());
   });
   Serial.println("MQTT connected");
 
