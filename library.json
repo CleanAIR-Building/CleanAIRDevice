@@ -5,7 +5,7 @@
   "keywords": "CleanAIR device sensor actuator",
   "repository": {
     "type": "git",
-    "url": "git@github.com:GarondEisenfaust/CleanAIRDevice.git"
+    "url": "https://github.com/GarondEisenfaust/CleanAIRDevice.git"
   },
   "license": "MIT",
   "dependencies": {
