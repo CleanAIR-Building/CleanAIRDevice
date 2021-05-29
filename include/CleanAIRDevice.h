@@ -14,5 +14,6 @@ void LoadConfiguration(const char* filename);
 void ConnectToWifi();
 void ConnectToMQTT();
 void SetConsumer(MessageConsumer* consumer);
+void SetMQTTClientName(const char* newMqttClientName);
 void Loop();
 }  // namespace CleanAIR

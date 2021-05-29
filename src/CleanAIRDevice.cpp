@@ -15,6 +15,7 @@ CleanAIR::Config config;
 WiFiClient wifiClient;
 PubSubClient pubSubClient;
 MessageConsumer* consumer;
+const char* mqttClientName = "MQTT Client";
 
 void ConnectToWifi(const Config& config) {
   Serial.print("Connect to Wifi ");
@@ -87,5 +88,5 @@ void LoadConfiguration(const char* filename) { LoadConfiguration(config, filenam
 void ConnectToWifi() { ConnectToWifi(config); }
 void ConnectToMQTT() { ConnectToMQTT(config, pubSubClient, *consumer, wifiClient); }
 void SetConsumer(MessageConsumer* newConsumer) { consumer = newConsumer; }
-
+void SetMQTTClientName(const char* newMqttClientName) { mqttClientName = newMqttClientName; }
 }  // namespace CleanAIR
