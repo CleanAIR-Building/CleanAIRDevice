@@ -68,6 +68,7 @@ void LoadConfiguration(/*out*/ Config& config, /*in*/ const char* filename) {
   config.mqttUser = configJson["mqttUser"].as<const char*>();
   config.mqttPassword = configJson["mqttPassword"].as<const char*>();
   config.mqttTopic = configJson["mqttTopic"].as<const char*>();
+  config.mqttClientName = configJson["mqttClientName"].as<const char*>();
 }
 
 void Loop() {
@@ -88,5 +89,4 @@ void LoadConfiguration(const char* filename) { LoadConfiguration(config, filenam
 void ConnectToWifi() { ConnectToWifi(config); }
 void ConnectToMQTT() { ConnectToMQTT(config, pubSubClient, *consumer, wifiClient); }
 void SetConsumer(MessageConsumer* newConsumer) { consumer = newConsumer; }
-void SetMQTTClientName(const char* newMqttClientName) { mqttClientName = newMqttClientName; }
 }  // namespace CleanAIR
