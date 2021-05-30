@@ -15,5 +15,6 @@ void LoadConfiguration(const char* filename);
 void ConnectToWifi();
 void ConnectToMQTT();
 void SetConsumer(MessageConsumer* consumer);
+void Publish(const char* topic, const MessageJson& message);
 void Loop();
 }  // namespace CleanAIR
