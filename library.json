@@ -9,7 +9,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "knolleary/PubSubClient": "^2.8",
+    "knolleary/PubSubClient": "2.8",
     "bblanchon/ArduinoJson": "6.18.0"
   },
   "frameworks": "arduino",
