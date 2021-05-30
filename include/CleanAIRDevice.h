@@ -1,3 +1,4 @@
+#pragma once
 #include "MessageConsumer.h"
 
 namespace CleanAIR {
