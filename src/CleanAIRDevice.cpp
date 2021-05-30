@@ -72,8 +72,9 @@ void LoadConfiguration(/*out*/ Config& config, /*in*/ const char* filename) {
 }
 
 void Publish(const char* topic, const MessageJson& message) {
-  std::string messageString(message.as<const char*>());
-  pubSubClient.publish(topic, messageString.c_str());
+  char messageBuffer[MESSAGE_JSON_SIZE];
+  serializeJson(message, messageBuffer);
+  pubSubClient.publish(topic, messageBuffer);
 }
 
 void Loop() {
