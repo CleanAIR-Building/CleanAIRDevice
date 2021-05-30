@@ -71,6 +71,11 @@ void LoadConfiguration(/*out*/ Config& config, /*in*/ const char* filename) {
   config.mqttClientName = configJson["mqttClientName"].as<const char*>();
 }
 
+void Publish(const char* topic, const MessageJson& message) {
+  std::string messageString(message.as<const char*>());
+  pubSubClient.publish(topic, messageString.c_str());
+}
+
 void Loop() {
   if (WiFi.status() == WL_DISCONNECTED) {
     Serial.println("Lost connection to WiFI!");
