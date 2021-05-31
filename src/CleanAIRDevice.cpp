@@ -5,7 +5,7 @@
 #include "ESP8266WiFi.h"
 #include "JsonDocuments.h"
 #include "JsonUtil.h"
-#include "MessageConsumer.h"
+#include "Messenger.h"
 #include "PubSubClient.h"
 #include "Util.h"
 
@@ -14,7 +14,7 @@ namespace CleanAIR {
 CleanAIR::Config config;
 WiFiClient wifiClient;
 PubSubClient pubSubClient;
-MessageConsumer* consumer;
+Messenger* messenger;
 const char* mqttClientName = "MQTT Client";
 
 void ConnectToWifi(const Config& config) {
@@ -28,16 +28,15 @@ void ConnectToWifi(const Config& config) {
   Serial.println(WiFi.localIP());
 }
 
-void ConnectToMQTT(const Config& config, PubSubClient& pubSubClient, MessageConsumer& consumer,
-                   WiFiClient& wifiClient) {
+void ConnectToMQTT(const Config& config, PubSubClient& pubSubClient, Messenger& messenger, WiFiClient& wifiClient) {
   // Sets the callback that is used when a message arrives
-  pubSubClient.setCallback([&consumer](char* topic, byte* payload, unsigned int length) {
+  pubSubClient.setCallback([&messenger](char* topic, byte* payload, unsigned int length) {
     const std::string messageBody(reinterpret_cast<char*>(payload), length);
     Serial.printf("Topic: %s | Message body: %s\n", topic, messageBody.c_str());
 
     MessageJson messageJson;
     ParseMessageJson(messageJson, messageBody);
-    consumer.Consume(topic, messageJson);
+    messenger.Consume(topic, messageJson);
   });
 
   Serial.print("Connect to MQTT ");
@@ -80,19 +79,19 @@ void Publish(const char* topic, const MessageJson& message) {
 void Loop() {
   if (WiFi.status() == WL_DISCONNECTED) {
     Serial.println("Lost connection to WiFI!");
-    CleanAIR::ConnectToWifi(CleanAIR::config);
+    ConnectToWifi(config);
   }
 
-  if (!CleanAIR::pubSubClient.connected()) {
+  if (!pubSubClient.connected()) {
     Serial.println("Lost connection to MQTT!");
-    CleanAIR::ConnectToMQTT(CleanAIR::config, CleanAIR::pubSubClient, *CleanAIR::consumer, CleanAIR::wifiClient);
+    ConnectToMQTT(config, pubSubClient, *messenger, wifiClient);
   }
   CleanAIR::pubSubClient.loop();
-  consumer->Loop();
+  messenger->Loop();
 }
 
 void LoadConfiguration(const char* filename) { LoadConfiguration(config, filename); }
 void ConnectToWifi() { ConnectToWifi(config); }
-void ConnectToMQTT() { ConnectToMQTT(config, pubSubClient, *consumer, wifiClient); }
-void SetConsumer(MessageConsumer* newConsumer) { consumer = newConsumer; }
+void ConnectToMQTT() { ConnectToMQTT(config, pubSubClient, *messenger, wifiClient); }
+void SetMessenger(Messenger* newMessenger) { messenger = newMessenger; }
 }  // namespace CleanAIR
