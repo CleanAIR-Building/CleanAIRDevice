@@ -5,7 +5,8 @@
 #include "ESP8266WiFi.h"
 #include "JsonDocuments.h"
 #include "JsonUtil.h"
-#include "Messenger.h"
+#include "MessageConsumer.h"
+#include "MessageProducer.h"
 #include "PubSubClient.h"
 #include "Util.h"
 
@@ -14,7 +15,8 @@ namespace CleanAIR {
 void LoadConfiguration(const char* filename);
 void ConnectToWifi();
 void ConnectToMQTT();
-void SetMessenger(Messenger* newMessenger);
-void Publish(const char* topic, const MessageJson& message);
+void ConnectToTopic();
+void SetConsumer(MessageConsumer* newConsumer);
+void SetProducer(MessageProducer* newProducer);
 void Loop();
 }  // namespace CleanAIR

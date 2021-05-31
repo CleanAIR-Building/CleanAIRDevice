@@ -5,7 +5,8 @@
 #include "ESP8266WiFi.h"
 #include "JsonDocuments.h"
 #include "JsonUtil.h"
-#include "Messenger.h"
+#include "MessageConsumer.h"
+#include "MessageProducer.h"
 #include "PubSubClient.h"
 #include "Util.h"
 
@@ -14,7 +15,9 @@ namespace CleanAIR {
 CleanAIR::Config config;
 WiFiClient wifiClient;
 PubSubClient pubSubClient;
-Messenger* messenger;
+MessageConsumer* consumer;
+MessageProducer* producer;
+
 const char* mqttClientName = "MQTT Client";
 
 void ConnectToWifi(const Config& config) {
@@ -28,17 +31,7 @@ void ConnectToWifi(const Config& config) {
   Serial.println(WiFi.localIP());
 }
 
-void ConnectToMQTT(const Config& config, PubSubClient& pubSubClient, Messenger& messenger, WiFiClient& wifiClient) {
-  // Sets the callback that is used when a message arrives
-  pubSubClient.setCallback([&messenger](char* topic, byte* payload, unsigned int length) {
-    const std::string messageBody(reinterpret_cast<char*>(payload), length);
-    Serial.printf("Topic: %s | Message body: %s\n", topic, messageBody.c_str());
-
-    MessageJson messageJson;
-    ParseMessageJson(messageJson, messageBody);
-    messenger.Consume(topic, messageJson);
-  });
-
+void ConnectToMQTT(const Config& config, PubSubClient& pubSubClient, WiFiClient& wifiClient) {
   Serial.print("Connect to MQTT ");
 
   pubSubClient.setServer(config.mqttAddress.c_str(), config.mqttPort);
@@ -48,6 +41,18 @@ void ConnectToMQTT(const Config& config, PubSubClient& pubSubClient, Messenger& 
     return pubSubClient.connect(config.mqttClientName.c_str(), config.mqttUser.c_str(), config.mqttPassword.c_str());
   });
   Serial.println("MQTT connected");
+}
+
+void ConnectToTopic(const Config& config, PubSubClient& pubSubClient, MessageConsumer& consumer) {
+  // Sets the callback that is used when a message arrives
+  pubSubClient.setCallback([&consumer](char* topic, byte* payload, unsigned int length) {
+    const std::string messageBody(reinterpret_cast<char*>(payload), length);
+    Serial.printf("Topic: %s | Message body: %s\n", topic, messageBody.c_str());
+
+    MessageJson messageJson;
+    ParseMessageJson(messageJson, messageBody);
+    consumer.Consume(topic, messageJson);
+  });
 
   Serial.printf("Subscribing to topic: %s", config.mqttTopic.c_str());
   WaitFor([&config, &pubSubClient]() { return pubSubClient.subscribe(config.mqttTopic.c_str()); });
@@ -70,12 +75,6 @@ void LoadConfiguration(/*out*/ Config& config, /*in*/ const char* filename) {
   config.mqttClientName = configJson["mqttClientName"].as<const char*>();
 }
 
-void Publish(const char* topic, const MessageJson& message) {
-  char messageBuffer[MESSAGE_JSON_SIZE];
-  serializeJson(message, messageBuffer);
-  pubSubClient.publish(topic, messageBuffer);
-}
-
 void Loop() {
   if (WiFi.status() == WL_DISCONNECTED) {
     Serial.println("Lost connection to WiFI!");
@@ -84,14 +83,29 @@ void Loop() {
 
   if (!pubSubClient.connected()) {
     Serial.println("Lost connection to MQTT!");
-    ConnectToMQTT(config, pubSubClient, *messenger, wifiClient);
+    ConnectToMQTT(config, pubSubClient, wifiClient);
+
+    if (consumer) {
+      ConnectToTopic(config, pubSubClient, *consumer);
+    }
   }
+
   CleanAIR::pubSubClient.loop();
-  messenger->Loop();
+  if (consumer) {
+    consumer->Loop();
+  }
+  if (producer) {
+    producer->Loop();
+  }
 }
 
 void LoadConfiguration(const char* filename) { LoadConfiguration(config, filename); }
 void ConnectToWifi() { ConnectToWifi(config); }
-void ConnectToMQTT() { ConnectToMQTT(config, pubSubClient, *messenger, wifiClient); }
-void SetMessenger(Messenger* newMessenger) { messenger = newMessenger; }
+void ConnectToMQTT() { ConnectToMQTT(config, pubSubClient, wifiClient); }
+void ConnectToTopic() { ConnectToTopic(config, pubSubClient, *consumer); }
+void SetConsumer(MessageConsumer* newConsumer) { consumer = newConsumer; }
+void SetProducer(MessageProducer* newProducer) {
+  producer = newProducer;
+  producer->SetPubSubClient(&pubSubClient);
+}
 }  // namespace CleanAIR
