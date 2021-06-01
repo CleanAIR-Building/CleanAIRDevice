@@ -108,4 +108,5 @@ void SetProducer(MessageProducer* newProducer) {
   producer = newProducer;
   producer->SetPubSubClient(&pubSubClient);
 }
+const Config& GetConfig() { return config; }
 }  // namespace CleanAIR

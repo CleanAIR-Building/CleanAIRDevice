@@ -18,5 +18,6 @@ void ConnectToMQTT();
 void ConnectToTopic();
 void SetConsumer(MessageConsumer* newConsumer);
 void SetProducer(MessageProducer* newProducer);
+const Config& GetConfig();
 void Loop();
 }  // namespace CleanAIR
