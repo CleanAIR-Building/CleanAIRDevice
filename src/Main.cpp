@@ -1,10 +1,6 @@
 #include "Arduino.h"
-#include "CleanAIRDevice.h"
+#include "TaskScheduler.h"
 
-void setup() {
-  Serial.begin(115200);
-  CleanAIR::ConnectToWifi();
-  CleanAIR::ConnectToMQTT();
-}
+void setup() {}
 
-void loop() { CleanAIR::Loop(); }
+void loop() {}

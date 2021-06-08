@@ -19,5 +19,6 @@ void ConnectToTopic();
 void SetConsumer(MessageConsumer* newConsumer);
 void SetProducer(MessageProducer* newProducer);
 const Config& GetConfig();
+void InitializeHeartBeat(unsigned long interval = 5000);
 void Loop();
 }  // namespace CleanAIR

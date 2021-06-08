@@ -3,11 +3,13 @@
 #include "ArduinoJson.h"
 #include "Config.h"
 #include "ESP8266WiFi.h"
+#include "HeartBeat.h"
 #include "JsonDocuments.h"
 #include "JsonUtil.h"
 #include "MessageConsumer.h"
 #include "MessageProducer.h"
 #include "PubSubClient.h"
+#include "TaskScheduler.h"
 #include "Util.h"
 
 namespace CleanAIR {
@@ -15,8 +17,10 @@ namespace CleanAIR {
 CleanAIR::Config config;
 WiFiClient wifiClient;
 PubSubClient pubSubClient;
+TaskScheduler taskScheduler;
 MessageConsumer* consumer;
 MessageProducer* producer;
+HeartBeat heartBeat;
 
 const char* mqttClientName = "MQTT Client";
 
@@ -73,6 +77,7 @@ void LoadConfiguration(/*out*/ Config& config, /*in*/ const char* filename) {
   config.mqttPassword = configJson["mqttPassword"].as<const char*>();
   config.mqttTopic = configJson["mqttTopic"].as<const char*>();
   config.mqttClientName = configJson["mqttClientName"].as<const char*>();
+  config.deviceType = configJson["deviceType"].as<const char*>();
 }
 
 void Loop() {
@@ -97,16 +102,38 @@ void Loop() {
   if (producer) {
     producer->Loop();
   }
+  taskScheduler.Loop();
+}
+
+void InitializeHeartBeat(HeartBeat& heartBeat, TaskScheduler& taskScheduler, PubSubClient& pubSubClient,
+                         const Config& config, unsigned long interval = 5000) {
+  heartBeat.SetDeviceName(config.mqttClientName);
+  heartBeat.SetDeviceType(config.deviceType);
+  heartBeat.SetPubSubClient(&pubSubClient);
+  taskScheduler.AddTask(interval, [&heartBeat]() {
+    heartBeat.Loop();
+    return true;
+  });
 }
 
 void LoadConfiguration(const char* filename) { LoadConfiguration(config, filename); }
+
 void ConnectToWifi() { ConnectToWifi(config); }
+
 void ConnectToMQTT() { ConnectToMQTT(config, pubSubClient, wifiClient); }
+
 void ConnectToTopic() { ConnectToTopic(config, pubSubClient, *consumer); }
+
 void SetConsumer(MessageConsumer* newConsumer) { consumer = newConsumer; }
+
+void InitializeHeartBeat(unsigned long interval /*=5000*/) {
+  InitializeHeartBeat(heartBeat, taskScheduler, pubSubClient, config, interval);
+}
+
 void SetProducer(MessageProducer* newProducer) {
   producer = newProducer;
   producer->SetPubSubClient(&pubSubClient);
 }
+
 const Config& GetConfig() { return config; }
 }  // namespace CleanAIR

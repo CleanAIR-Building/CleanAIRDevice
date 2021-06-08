@@ -1,5 +1,6 @@
 #pragma once
 #include "JsonDocuments.h"
+#include <string>
 
 class PubSubClient;
 

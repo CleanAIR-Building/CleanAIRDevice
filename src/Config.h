@@ -12,5 +12,6 @@ struct Config {
   std::string mqttPassword;
   std::string mqttTopic;
   std::string mqttClientName;
+  std::string deviceType;
 };
 }  // namespace CleanAIR
