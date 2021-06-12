@@ -13,6 +13,7 @@ class MessageProducer {
 
  protected:
   void Publish(const char* topic, const MessageJson& message);
+  void Publish(const char* topic, const MessageJson& message, boolean retained);
 
  private:
   PubSubClient* mPubSubClient;
