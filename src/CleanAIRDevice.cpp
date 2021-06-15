@@ -58,9 +58,9 @@ void ConnectToTopic(const Config& config, PubSubClient& pubSubClient, MessageCon
     consumer.Consume(topic, messageJson);
   });
 
-  Serial.printf("Subscribing to topic: %s", config.mqttTopic.c_str());
-  WaitFor([&config, &pubSubClient]() { return pubSubClient.subscribe(config.mqttTopic.c_str()); });
-  Serial.printf("Subscribed to topic: %s\n", config.mqttTopic.c_str());
+  Serial.printf("Subscribing to topic: %s", config.mqttSubscribeTopic.c_str());
+  WaitFor([&config, &pubSubClient]() { return pubSubClient.subscribe(config.mqttSubscribeTopic.c_str()); });
+  Serial.printf("Subscribed to topic: %s\n", config.mqttSubscribeTopic.c_str());
 }
 
 void LoadConfiguration(/*out*/ Config& config, /*in*/ const char* filename) {
@@ -75,7 +75,8 @@ void LoadConfiguration(/*out*/ Config& config, /*in*/ const char* filename) {
   config.mqttPort = configJson["mqttPort"].as<uint16_t>();
   config.mqttUser = configJson["mqttUser"].as<const char*>();
   config.mqttPassword = configJson["mqttPassword"].as<const char*>();
-  config.mqttTopic = configJson["mqttTopic"].as<const char*>();
+  config.mqttPublishTopic = configJson["mqttPublishTopic"].as<const char*>();
+  config.mqttSubscribeTopic = configJson["mqttSubscribeTopic"].as<const char*>();
   config.mqttClientName = configJson["mqttClientName"].as<const char*>();
   config.deviceType = configJson["deviceType"].as<const char*>();
 }

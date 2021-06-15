@@ -10,7 +10,8 @@ struct Config {
   uint16_t mqttPort;
   std::string mqttUser;
   std::string mqttPassword;
-  std::string mqttTopic;
+  std::string mqttPublishTopic;
+  std::string mqttSubscribeTopic;
   std::string mqttClientName;
   std::string deviceType;
 };
